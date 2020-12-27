@@ -17,6 +17,15 @@ public class SnowMan {
   float snowballY;
   float snowballThrowX;
   float snowballThrowY;
+  boolean reset = false;
+  double scaledSpeed = 0;
+  float RsnowballSize = 0;
+  float RsnowballX;
+  float RsnowballY;
+  float RsnowballThrowX;
+  float RsnowballThrowY;
+  boolean Rreset = false;
+  double RscaledSpeed = 0;
   
   public SnowMan() {
     this.scale = height / 800.0;    // scale 1 for height = 800
@@ -159,9 +168,12 @@ public class SnowMan {
     line(leftArmX, armY , leftArmX + leftHandX, armY + leftHandY); 
     line(rightArmX, armY , rightArmX + rightHandX, armY + rightHandY);
     
-    if( mousePressed ){
+    if( (mouseButton == LEFT) ){
       // Build an increasingly large snowball when pressing the mouse
-      
+    if(reset){
+     snowballSize = 0;
+     reset = false;
+    }
       snowballSize++;
       
       strokeWeight(3);
@@ -171,7 +183,11 @@ public class SnowMan {
       snowballX = leftArmX + leftHandX;
       snowballY = armY + leftHandY;
       circle(snowballX, snowballY, snowballSize);
-    } else {      
+    } else {
+  if(snowballX==leftHandX+leftArmX&&snowballY==leftHandY+armY){
+      reset = true;
+    }
+      
       if( snowballSize > 0 ){
         // We have a snowball to throw!
         
@@ -185,16 +201,65 @@ public class SnowMan {
           snowballSize = 0;
         } else {
           // Snowball on the screen so move it
-          
+          if(snowballSize>=190){
+            snowballY+=10;
+          }else{
+          scaledSpeed = 190-snowballSize;
           float thetaS = atan( abs(snowballThrowY - armY) / abs(snowballThrowX - leftArmX) );
-          float snowballIncX = ( snowballThrowX > leftArmX ) ? 10 * cos(thetaS) : -10 * cos(thetaS);
-          float snowballIncY = ( snowballThrowY > armY ) ? 10 * sin(thetaS) : -10 * sin(thetaS);
+          float snowballIncX = ( snowballThrowX > leftArmX ) ? (float)scaledSpeed * cos(thetaS) : (float)-scaledSpeed * cos(thetaS);
+          float snowballIncY = ( snowballThrowY > armY ) ?(float) scaledSpeed * sin(thetaS) : (float)-scaledSpeed * sin(thetaS);
           snowballX += snowballIncX;
           snowballY += snowballIncY;
+          }
         }
       }
     }
-    
+    if( (mouseButton == RIGHT) ){
+      // Build an increasingly large snowball when pressing the mouse
+    if(Rreset){
+     RsnowballSize = 0;
+     Rreset = false;
+    }
+      snowballSize++;
+      
+      strokeWeight(3);
+      stroke(0);
+      RsnowballThrowX = mouseX;
+      RsnowballThrowY = mouseY;
+      RsnowballX = rightHandX;
+      RsnowballY = armY + rightHandY;
+      circle(RsnowballX, RsnowballY, RsnowballSize);
+    } else {
+  if(RsnowballX==rightHandX&&RsnowballY==rightHandY+armY){
+      Rreset = true;
+    }
+      
+      if( snowballSize > 0 ){
+        // We have a snowball to throw!
+        
+        strokeWeight(3);
+        stroke(0);
+        circle( RsnowballX, RsnowballY, RsnowballSize);
+        
+        if( RsnowballX < 0 || RsnowballX > width || RsnowballY < 0 || RsnowballY > height ){
+          // Snowball is off the screen, reset
+          
+          RsnowballSize = 0;
+        } else {
+          // Snowball on the screen so move it
+          if(RsnowballSize>=190){
+            RsnowballY+=10;
+          }else{
+          RscaledSpeed = 190-RsnowballSize;
+          float RthetaS = atan( abs(RsnowballThrowY - armY) / abs(RsnowballThrowX - rightArmX) );
+          float RsnowballIncX = ( RsnowballThrowX > rightArmX ) ? (float)RscaledSpeed * cos(RthetaS) : (float)-RscaledSpeed * cos(RthetaS);
+          float RsnowballIncY = ( RsnowballThrowY > armY ) ?(float) RscaledSpeed * sin(RthetaS) : (float)-RscaledSpeed * sin(RthetaS);
+          RsnowballX += RsnowballIncX;
+          RsnowballY += RsnowballIncY;
+          }
+        }
+      }
+    }
     pop();
   }
   
